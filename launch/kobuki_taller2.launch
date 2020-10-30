@@ -7,11 +7,11 @@
         file="$(find kobuki_node)/launch/minimal.launch">
     </include> -->
     <!-- Gazebo empty world -->
-    <include file="$(find taller2_pkg)/launch/kuboki_mundo_taller2.launch" />
+    <include file="$(find taller2_RCSV)/launch/kuboki_mundo_taller2.launch" />
     
     <!-- Controller -->
     <!-- roslaunch kobuki_controller_tutorial  -->
-    <include file="$(find kobuki_controller_tutorial)/launch/bump_blink_app.launch" />
+    <!-- <include file="$(find kobuki_controller_tutorial)/launch/bump_blink_app.launch" /> -->
 
     <!-- <node name="move_base_simple/goal" pkg="move_base_simple" type="move_base_simple"  >
         <remap from="/cmd_vel"  to="/mobile_base/commands/velocity" />
