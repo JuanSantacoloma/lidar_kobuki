@@ -43,18 +43,17 @@
     />
 
     <!-- Broadcaster  -->
-    <!-- <node 
+    <node 
         pkg="taller2_RCSV" 
-        type="trayectory_publisher.py" 
+        type="kobuki_broadcaster_node.py" 
         name="publisher" 
-        output="screen" /> -->
+        output="screen" />
       <!-- <param name="turtle" type="string" value="turtle1"  -->
-    <!-- </node> -->
 
     <!-- Listener -->
-    <!-- <node 
+    <node 
         pkg="taller2_RCSV" 
-        type="kobuki_listener.py" 
-        name="listener" 
-        output="screen"/> -->
+        type="kobuki_listener_node.py" 
+        name="listen" 
+        output="screen"/>
 </launch>

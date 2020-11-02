@@ -6,6 +6,7 @@ import math
 import numpy as np
 from kobuki_broadcaster_class import Broadcaster
 
+
 if __name__ == '__main__':
     
     rospy.init_node('dynamic_tf2_broadcaster')
@@ -20,6 +21,8 @@ if __name__ == '__main__':
     i=0
 
     rate = rospy.Rate(10.0)
+    # self.modelo = Broadcaster()
+
 
     trajecx = np.array([-3.5,-3.5, 1.5, 1.5, 3.5, 3.5,-2.5,-2.5, 1.5, 1.5,-1.0])
     trajecy = np.array([0,   3.5, 3.5,-1.5,-1.5,-8.0,-8.0,-5.5,-5.5,-3.5,-3.5])
@@ -27,8 +30,7 @@ if __name__ == '__main__':
     while not rospy.is_shutdown():
         # x = rospy.Time.now().to_sec() * math.pi
         
-        broad = Broadcaster()
-        print(broad.Marker_Callback())
+        
         # if (Broadcaster.Marker_Callback<0.1):
         #     i=i+1
 
@@ -43,3 +45,6 @@ if __name__ == '__main__':
 
         br.sendTransform(t)
         rate.sleep()
+
+        # broad = Broadcaster()
+        # print(broad.Marker_Callback())
