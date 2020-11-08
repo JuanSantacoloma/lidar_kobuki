@@ -45,15 +45,18 @@
     <!-- Broadcaster  -->
     <node 
         pkg="taller2_RCSV" 
-        type="kobuki_broadcaster_node.py" 
-        name="publisher" 
+        type="trayectory_publisher.py" 
+        name="trayectory_publisher" 
         output="screen" />
       <!-- <param name="turtle" type="string" value="turtle1"  -->
 
-    <!-- Listener -->
-    <node 
+    <!-- one class -->
+    <!-- <node 
         pkg="taller2_RCSV" 
-        type="kobuki_listener_node.py" 
-        name="listen" 
-        output="screen"/>
+        type="one_node.py" 
+        name="one_broad_list" 
+        output="screen"/> -->
+    <!-- Rviz -->
+    <node name="rviz" pkg="rviz" type="rviz" args=" -d $(find taller2_RCSV)/config/config.rviz"/> 
+
 </launch>

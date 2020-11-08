@@ -5,28 +5,23 @@ import geometry_msgs.msg
 import math
 import numpy as np
 from kobuki_broadcaster_class import Broadcaster
-from   rospy.numpy_msg import numpy_msg
-from geometry_msgs.msg import TransformStamped
-
 
 
 if __name__ == '__main__':
     
     rospy.init_node('dynamic_tf2_broadcaster')
     rospy.loginfo("Node trajectory")
-    topicPub = "/pose_trayect"
 
     br = tf2_ros.TransformBroadcaster()
     t = geometry_msgs.msg.TransformStamped()
 
     t.header.frame_id = "odom"
-    t.child_frame_id = "carrot0"
+    t.child_frame_id = "carrot1"
 
     i=0
 
     rate = rospy.Rate(10.0)
     # self.modelo = Broadcaster()
-    pubPose = rospy.Publisher(topicPub, numpy_msg(TransformStamped), queue_size=10)
 
 
     trajecx = np.array([-3.5,-3.5, 1.5, 1.5, 3.5, 3.5,-2.5,-2.5, 1.5, 1.5,-1.0])
@@ -49,9 +44,7 @@ if __name__ == '__main__':
         t.transform.rotation.w = 1.0
 
         br.sendTransform(t)
-        pubPose.publish(t)
         rate.sleep()
-    # rospy.spin()
 
         # broad = Broadcaster()
         # print(broad.Marker_Callback())
