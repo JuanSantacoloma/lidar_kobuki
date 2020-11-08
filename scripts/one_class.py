@@ -34,8 +34,22 @@ class Broadcaster_Listener:
         
         # Trajectory
         self.i=0
-        self.trajecx = np.array([0.00000001,-3.5,-3.5, 1.5, 1.5, 3.5, 3.5,-2.5,-2.5, 1.5, 1.5,-1.0])
-        self.trajecy = np.array([0.00000001,0.0, 3.5, 3.5,-1.5,-1.5,-8.0,-8.0,-5.5,-5.5,-3.5,-3.5])
+        x = rospy.get_param('trayec_py')
+        if x==1 :
+            print("Entramos a la trayectoria 1")
+            
+            self.trajecx = np.array([0.01,-3.5,-3.51, 1.5, 1.51, 3.5, 3.5,-2.52,-2.5, 1.52, 1.5,-1.0])
+            self.trajecy = np.array([0.01,0.01, 3.51, 3.5,-1.5,-1.5,-8.0,-8.1,-5.5,-5.1,-3.5,-3.51])
+        elif x==2 :
+            print("Entramos a la trayectoria 2") 
+            self.trajecx = np.array([0.01,2.5,2.5,5.0,5.0,9.0,9.0,3.5,2.5,0.01])
+            self.trajecy = np.array([0.01,0.01,-8.0,-8.0,-4.0,-4.0,3.0,3.0,0.01,0.01])
+        elif x==3 :
+            print("Entramos a la trayectoria 3") 
+            self.trajecx = np.array([0.001,0.01,1.5,1.5,4.5,-4.5])
+            self.trajecy = np.array([0.01,2.5,2.5,-5.0,-5.0,-5.0])
+
+
         self.flagAngular = False
         self.flagLinear = False
         # fallo transformacion

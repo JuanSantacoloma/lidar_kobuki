@@ -11,6 +11,8 @@ if __name__ == '__main__':
     
     rospy.init_node('dynamic_tf2_broadcaster')
     rospy.loginfo("Node trajectory")
+    
+
 
     br = tf2_ros.TransformBroadcaster()
     t = geometry_msgs.msg.TransformStamped()
