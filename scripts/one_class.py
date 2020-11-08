@@ -34,20 +34,22 @@ class Broadcaster_Listener:
         
         # Trajectory
         self.i=0
-        self.trajecx = np.array([0.0,-3.5,-3.5, 1.5, 1.5, 3.5, 3.5,-2.5,-2.5, 1.5, 1.5,-1.0])
-        self.trajecy = np.array([0.0,0.0, 3.5, 3.5,-1.5,-1.5,-8.0,-8.0,-5.5,-5.5,-3.5,-3.5])
+        self.trajecx = np.array([0.00000001,-3.5,-3.5, 1.5, 1.5, 3.5, 3.5,-2.5,-2.5, 1.5, 1.5,-1.0])
+        self.trajecy = np.array([0.00000001,0.0, 3.5, 3.5,-1.5,-1.5,-8.0,-8.0,-5.5,-5.5,-3.5,-3.5])
         self.flagAngular = False
         self.flagLinear = False
+        # fallo transformacion
+        self.flagTrans = True
 
         self.errorAngular = 0.225
-        self.errorLinear = 0.006
+        self.errorLinear = 0.06
         # Publisher
         self.kobuki_vel = rospy.Publisher('/mobile_base/commands/velocity' , numpy_msg(Twist), queue_size=1)
 
     #--------------------------------------------------------------------------------------#
     # Callback o interrupcion
     def Marker_Callback(self, marker_info):
-
+        self.flagTrans = True
 
         #--------------------------------------------------------------------------------#
         #--------------------------------------------------------------------------------#
@@ -65,10 +67,10 @@ class Broadcaster_Listener:
         
         
         # Translation part of MTH
-        # self.transform.transform.translation.x = self.trajecx[self.i]
-        # self.transform.transform.translation.y = self.trajecy[self.i]
-        self.transform.transform.translation.x = self.trajecx[1]
-        self.transform.transform.translation.y = self.trajecy[1]
+        self.transform.transform.translation.x = self.trajecx[self.i]
+        self.transform.transform.translation.y = self.trajecy[self.i]
+        # self.transform.transform.translation.x = self.trajecx[1]
+        # self.transform.transform.translation.y = self.trajecy[1]
         self.transform.transform.translation.z = 0.0
 
         # Rotation part of MTH
@@ -102,7 +104,8 @@ class Broadcaster_Listener:
         try:
             trans_base_carrot = self.tfBuffer.lookup_transform("base_footprint", "carrot1", rospy.Time())
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
-            rospy.logwarn("Error trying to look for transform")
+            rospy.logwarn("Error trying to look for transform base-carrot")
+            self.flagTrans = False
             return 
 
         # Creater quaternion vector
@@ -136,8 +139,8 @@ class Broadcaster_Listener:
         try:
             trans_odom_carrot = self.tfBuffer.lookup_transform("odom", "carrot1", rospy.Time())
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
-            rospy.logwarn("Error trying to look for transform")
-            return 
+            rospy.logwarn("Error trying to look for transform odom-carrot")
+            pass
         quat_from_ROS = np.array([trans_odom_carrot.transform.rotation.x, \
                                     trans_odom_carrot.transform.rotation.y, \
                                     trans_odom_carrot.transform.rotation.z, \
@@ -168,18 +171,19 @@ class Broadcaster_Listener:
         msg = geometry_msgs.msg.Twist()      
         #Error Angular
         Rot_error = Rot_base_carrot-Rot_odom_carrot
+
         rot_error_trans = np.arctan2(trans_base_carrot.transform.translation.y, trans_base_carrot.transform.translation.x)
 
         # Angular Kobuki Velocity
         # if (np.all(np.absolute(Rot_error) < self.errorAngular ) ):
 
-        print(rot_error_trans)
+        # print(quat_from_ROS)
 
         if (np.absolute(rot_error_trans) > self.errorAngular and (rot_error_trans < 0)):
             msg.angular.z = -np.pi/3
         elif(np.absolute(rot_error_trans) > self.errorAngular and (rot_error_trans > 0)):
             msg.angular.z = np.pi/3
-        else:
+        elif (np.absolute(rot_error_trans) < self.errorAngular):
             self.flagAngular = True
             msg.angular.z = 0
 
@@ -213,7 +217,7 @@ class Broadcaster_Listener:
         # print( MTH_from_ROS - MTH_from_twoSteps )
         # print("")
 
-        # print(self.i)
+        print(self.i)
         # print("flag linear")
         # print(self.flagLinear)
         # print("flag angular")
@@ -222,9 +226,13 @@ class Broadcaster_Listener:
         # print(np.all(np.absolute(Rot_error) < self.errorAngular))
 
         # if (self.flagLinear and self.flagAngular):
-        if (not(transl_error_trans > self.errorLinear and self.flagAngular) and not(np.absolute(rot_error_trans) > self.errorAngular and (rot_error_trans < 0)) and self.flagAngular and self.flagLinear):
-
+        # if ((transl_error_trans < self.errorLinear) and (np.absolute(rot_error_trans) < self.errorAngular) and self.flagAngular and self.flagLinear and (trans_base_carrot != 0) and (np.absolute(rot_error_trans) != 0) and self.flagTrans):
+        if self.flagLinear: 
             self.flagAngular = False
             self.flagLinear = False
             self.i=self.i+1
-        
+            if self.i == 12:
+                self.i == 11
+                
+
+            
