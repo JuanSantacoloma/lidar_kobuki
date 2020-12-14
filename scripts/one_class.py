@@ -35,6 +35,7 @@ class Broadcaster_Listener:
         # Trajectory
         self.i=0
         x = rospy.get_param('trayec_py')
+        
         if x==1 :
             print("Entramos a la trayectoria 1")
             
@@ -194,19 +195,12 @@ class Broadcaster_Listener:
         # print(quat_from_ROS)
 
         if (np.absolute(rot_error_trans) > self.errorAngular and (rot_error_trans < 0)):
-            msg.angular.z = -np.pi/3
+            msg.angular.z = -np.pi*1.0
         elif(np.absolute(rot_error_trans) > self.errorAngular and (rot_error_trans > 0)):
-            msg.angular.z = np.pi/3
+            msg.angular.z = np.pi*1.0
         elif (np.absolute(rot_error_trans) < self.errorAngular):
             self.flagAngular = True
             msg.angular.z = 0
-
-        # if (self.flagAngular):
-        #     # msg.angular.z = 1.9 * np.arctan2(trans_base_carrot.transform.translation.y, trans_base_carrot.transform.translation.x)
-        #     msg.angular.z = np.pi/3
-        # else:
-        #     self.flagLinear = True
-        #     msg.angular.z = 0
 
         # Linear Kobuki Velocity
         transl_error_trans = np.sqrt(trans_base_carrot.transform.translation.x ** 2 + trans_base_carrot.transform.translation.y ** 2)
@@ -218,12 +212,6 @@ class Broadcaster_Listener:
         elif (transl_error_trans < self.errorLinear and self.flagAngular):
             self.flagLinear = True
             msg.linear.x = 0
-
-        # if (self.flagLinear):
-        #     # msg.linear.x = 0.05 * np.sqrt(trans_base_carrot.transform.translation.x ** 2 + trans_base_carrot.transform.translation.y ** 2)
-        #     msg.linear.x = 0.3
-        # else:
-        #     msg.linear.x = 0
 
         self.kobuki_vel.publish(msg)
 
