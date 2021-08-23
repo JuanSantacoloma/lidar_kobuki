@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Spawn arguments -->
+    <arg name="laser_enabled" default="true"/>
+    <arg name="robot_namespace" default="/"/>
+    <!-- Posicion y orientacion del kobuki al aparecer en Gazebo -->
+    <arg name="x" default="1.0"/>
+        <arg name="y" default="1.0"/>
+        <arg name="z" default="0.01"/>
+        <arg name="roll" default="0.0"/>
+        <arg name="pitch" default="0.0"/>
+        <arg name="yaw" default="$(eval -90.0 * 3.141592 / 180.0)"/>
+
+    
+    <!-- <arg name="model" default="$(find kobuki_lidar)/urdf/basic_kuboki_model.urdf.xacro"/> -->
+
+    <!-- Parse of Model -->
+    <param 
+        name="robot_description" 
+        command="$(find xacro)/xacro '$(find lidar_kobuki)/urdf/kobuki_standalone.urdf.xacro'
+                  robot_namespace:=$(arg robot_namespace)
+                  laser_enabled:=$(arg laser_enabled)" 
+    />
+
+    <!-- Robot_state_publisher -->
+    <!-- Publica las transformaciones entre marcos de referencia fijos -->
+    <node 
+        pkg="robot_state_publisher" 
+        type="robot_state_publisher" 
+        name="rob_pub" />
+
+    <!-- ///////////////////////////////////////////////////////////////      -->
+    <!-- Init Gazebo  -->
+    <!-- Define world -->
+    <arg name="world_taller" default="$(find lidar_kobuki)/worlds/taller2.world"/>
+    <!-- Cargar el mundo -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value ="$(arg world_taller)"/>
+        <!-- <arg name="world_name" value ="empty_world"/> -->
+        <arg name="paused" value ="false" />
+        <arg name="use_sim_time" value ="true" />
+        <arg name="gui" value ="true" />
+        <arg name="verbose" value ="False" />
+    </include>
+
+    <!-- Spawn of robot inside Gazebo -->
+    <node 
+        pkg="gazebo_ros" 
+        type="spawn_model" 
+        name="spawn_robot"
+        respawn="false"
+        args="  -param robot_description
+                -urdf
+                -model $(arg robot_namespace)
+                -x $(arg x) -y $(arg y) -z $(arg z)
+                -R $(arg roll) -P $(arg pitch) -Y $(arg yaw)"
+    />
+    <node pkg="slam_karto" type="slam_karto" name="slam_karto" output="screen">
+        <rosparam command="load" file="$(find lidar_kobuki)/config/karto_mapper_params.yaml"/>
+    </node>
+
+    <node 
+        pkg="rviz" 
+        type="rviz" 
+        name="rviz"
+        args="-d $(find lidar_kobuki)/config/rviz_kobuki_lidar.rviz" 
+    />
+</launch>

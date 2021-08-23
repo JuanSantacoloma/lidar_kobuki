@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>taller2_RCSV</name>
+  <name>lidar_kobuki</name>
   <version>0.0.0</version>
   <description>The taller2_pkg package</description>
 

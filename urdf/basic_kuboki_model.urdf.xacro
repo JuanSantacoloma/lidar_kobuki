@@ -1,0 +1,249 @@
+<?xml version="1.0"?>
+<!--
+Software License Agreement (BSD)
+
+\file      husky.urdf.xacro
+\authors   Paul Bovbel <pbovbel@clearpathrobotics.com>, Devon Ash <dash@clearpathrobotics.com>
+\copyright Copyright (c) 2015, Clearpath Robotics, Inc., All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that
+the following conditions are met:
+ * Redistributions of source code must retain the above copyright notice, this list of conditions and the
+   following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the
+   following disclaimer in the documentation and/or other materials provided with the distribution.
+ * Neither the name of Clearpath Robotics nor the names of its contributors may be used to endorse or promote
+   products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WAR-
+RANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, IN-
+DIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<robot name="basic_kuboki" xmlns:xacro="http://ros.org/wiki/xacro">
+    <!-- Definicion de PI -->
+    <xacro:property name="M_PI" value="3.14159"/>
+    <!-- Argumentos xacro para la ubicacion del laser -->
+    <xacro:arg name="laser_enabled" default="true" />
+    <xacro:arg name="laser_xyz" default="0.0875 0.0375 0.00635" />
+    <xacro:arg name="laser_rpy" default=" 0.0 0.0 0.0" />
+    
+    <xacro:arg name="robot_namespace" default="/" />
+
+    <!-- Links y join para montar el laser -->
+    <xacro:include filename="$(find kobuki_lidar)/urdf/sick_lms1xx_mount.urdf.xacro"/>
+
+
+    <!-- Marco de referencia (Eslabon) inercial-->
+    <link name="base_footprint"/>
+    
+    <!-- Definicion de la junta entre base_footprint y base_link-->
+    <joint name="fixed_joint" type="fixed">
+        <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+        <parent link="base_footprint"/>
+        <child link="base_link"/>
+    </joint>
+
+    <link name="base_link">
+        <visual>
+            <origin xyz="0.0 0.0 0.0" />
+            <geometry>
+                <cylinder radius="0.175" length="0.075"/>
+            </geometry>
+            <material name="Black">
+                <color rgba="0.0 0.0 0.0 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0.0 0.0 0.0" />
+            <geometry>
+                <cylinder radius="0.175" length="0.075"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="1.0"/>
+            <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+        </inertial>
+    </link>
+
+    <!-- Definicion de ruedas esfericas de soporte -->
+
+    <!-- Rueda soporte 1 -->
+    <joint name="sphere_joint_1" type="fixed">
+        <origin xyz="0.115 0.0 -0.029" rpy="0.0 0.0 0.0"/>
+        <parent link="base_link"/>
+        <child link="sphere_link_1"/>
+    </joint>
+
+    <link name="sphere_link_1">
+        <visual>
+            <origin xyz="0.0 0.0 0.0" />
+            <geometry>
+                <sphere radius="0.017"/>
+            </geometry>
+            <material name="black">
+                <color rgba="0.0 0.0 0.0 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0.0 0.0 0.0" />
+            <geometry>
+                <sphere radius="0.017"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="1.0"/>
+            <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+        </inertial>
+    </link>
+
+    <!-- Rueda soporte 2 -->
+
+    <joint name="sphere_joint_2" type="fixed">
+        <origin xyz="-0.135 0.0 -0.029" rpy="0.0 0.0 0.0"/>
+        <parent link="base_link"/>
+        <child link="sphere_link_2"/>
+    </joint>
+
+    <link name="sphere_link_2">
+        <visual>
+            <origin xyz="0.0 0.0 0.0" />
+            <geometry>
+                <sphere radius="0.017"/>
+            </geometry>
+            <material name="black">
+                <color rgba="0.0 0.0 0.0 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0.0 0.0 0.0" />
+            <geometry>
+                <sphere radius="0.017"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="1.0"/>
+            <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+        </inertial>
+    </link>
+
+    <!-- Rueda motorizada 1 -->
+
+    <joint name="joint_wheel_1" type="continuous">
+        <origin xyz="0.0 0.114964 -0.0125" rpy="$(eval -pi/2) 0.0 0.0"/>
+        <parent link="base_link"/>
+        <child link="wheel_1_motor"/>
+        <axis xyz="0.0 0.0 1.0"/>
+        <limit effort="10" velocity="6.0"/>
+    </joint>
+
+    <link name="wheel_1_motor">
+        <visual name="">
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <!-- <sphere radius="0.0352"/> -->
+                <cylinder radius="0.0352" length="0.0206"/>
+            </geometry>
+            <material name="blue">
+                <color rgba="0.0 0.0 1.0 1.0"/>
+                <texture filename=""/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <sphere radius="0.0352"/>
+                <!-- <cylinder radius="0.0352" length="0.0206"/> -->
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="1.0"/>
+            <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+        </inertial>
+    </link>
+
+    <transmission name="tranmission_1">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="joint_wheel_1">
+            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="motor1">
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+   
+    <!-- Rueda motorizada 2 -->
+
+    <joint name="joint_wheel_2" type="continuous">
+        <origin xyz="0.0 -0.114964 -0.0125" rpy="$(eval -pi/2) 0.0 0.0"/>
+        <parent link="base_link"/>
+        <child link="wheel_2_motor"/>
+        <axis xyz="0.0 0.0 1.0"/>
+        <limit effort="10" velocity="6.0"/>
+    </joint>
+
+    <link name="wheel_2_motor">
+        <visual name="">
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <!-- <sphere radius="0.0352"/> -->
+                <cylinder radius="0.0352" length="0.0206"/>
+            </geometry>
+            <material name="blue">
+                <color rgba="0.0 0.0 1.0 1.0"/>
+                <texture filename=""/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <sphere radius="0.0352"/>
+                <!-- <cylinder radius="0.0352" length="0.0206"/> -->
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="1.0"/>
+            <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+        </inertial>
+    </link>
+
+    <transmission name="tranmission_2">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="joint_wheel_2">
+            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="motor2">
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+    
+    
+    <!-- Gazebo ROS Plugin-->
+    <!-- Plugin para que Gazebo pueda entender los controladores-->
+    <gazebo>
+        <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+            <robotNamespace>/</robotNamespace>
+        </plugin>
+    </gazebo>
+
+    <xacro:if value="$(arg laser_enabled)">
+
+        <sick_lms1xx_mount prefix="base"/>
+
+        <sick_lms1xx frame="base_laser" topic="scan" robot_namespace="$(arg robot_namespace)"/>
+
+        <joint name="laser_mount_joint" type="fixed">
+            <origin xyz="$(arg laser_xyz)" rpy="$(arg laser_rpy)" />
+            <parent link="base_link" />
+            <child link="base_laser_mount" />
+        </joint>
+
+    </xacro:if>
+
+    
+    
+
+</robot>
